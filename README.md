@@ -66,3 +66,39 @@ The dataset includes the following columns:
 | LoanApproved | Loan approval status | 
 | RiskScore | Risk assessment score | 
 
+
+### Implementation
+1) Understanding the Dataset (performing inintal analysis)
+    - Overall shape of the dataset (20000,36)
+    - Presence of any null values (no null values)
+    - Checking the datatypes of the columns (float, int and object)
+    - Identifying calculated columns so as to retain those and drop the component columns
+        (for instance, there is a annualIncome column which is MonthlyIncome * 12. So, Instead of retaining both the monthly and annual income columns, we can just retain the annual income column.)
+
+2) Data Cleaning
+    - Dropping unecessary columns 
+    - Cleaning the Application Date column (extracting the month and year from the date)
+    - Truncating the floating point values (rounding to 3 decimal places)
+    - Checking for consistency in column data
+
+3) Feature Correlation
+    - Checking how much each feature contributed to determining the target column.
+    - We are creating a correlation matrix with the target variable and then sorting the features by the magnitude of correlation.
+    - We are using a heatmap color code the features based on the magnitude.
+    - **Observation**: The following columns play a significant role in determining whether the loan is approved or rejected
+        -  (having positive correlation) 'NetWorth', 'CreditScore', 'Age', 'Experience', 'LengthOfCreditHistory'
+        -  (having negative correlation) 'DebtToIncomeRatio', 'Monthly_LoanToIncomeRatio', 'RiskScore'
+
+    - We now create a subset of the dataset with only these columns.
+
+4) Train Test Split
+    - We split the dataset in a **60:20:20 ratio** to create the Train, Validation and Test datasets.
+    - We set the random state to 42 and apply stratification to ensure the proportion of approved and rejected records stay the same in all 3 datasets.
+
+5) Encoding and Scaling
+    - We now convert all the categorical columns to numeric using the **Ordinal Encoder**.
+    - To scale the data to ensure that all records in each column lie in the same range. We use the **Robust Scaler** to scale the data values since it is robust to outliers.  
+
+6) Balancing the data (approved and rejected loan application records)
+7) Model Training
+8) Model Evaluation
