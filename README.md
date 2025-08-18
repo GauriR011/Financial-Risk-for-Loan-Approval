@@ -1,32 +1,28 @@
 # Financial-Risk-for-Loan-Approval
 
 ### Business Problem: Optimizing Loan Portfolio Profitability While Minimizing Risk Exposure
-Background:
+**Background:**    
 A financial institution wants to grow its loan portfolio by approving more applications without significantly increasing its default risk. Historically, overly cautious approval strategies have led to lost revenue opportunities, while lenient strategies have increased default rates and write-offs.
 
-#### Objective:
+**Objective:**    
 Use predictive modeling to identify applicants who are both likely to repay their loans and profitable to approve, balancing approval rates with financial risk and expected returns.
 
-#### Key Questions to Address:
-##### Risk Assessment (Regression Task)
+#### Key Question to Address:
+<!-- ##### Risk Assessment (Regression Task)
 
 1) What is the predicted RiskScore for a new applicant, indicating the likelihood of default?
 
-2) How does this score correlate with key variables like credit history, debt-to-income ratio, or loan purpose?
+2) How does this score correlate with key variables like credit history, debt-to-income ratio, or loan purpose? -->
 
-##### Loan Approval (Classification Task)
+**Loan Approval (Classification Task)** - Should this applicant be approved or denied for a loan based on their financial profile?
 
-1) Should this applicant be approved or denied for a loan based on their financial profile?
-
-2) Can we automate or assist underwriters in making consistent, fair, and data-driven decisions?
-
-##### Strategic Decisioning
+<!-- ##### Strategic Decisioning
 
 1) How can we segment applicants (e.g., low-risk/high-value, high-risk/low-value) to refine lending strategies?
 
 2) What threshold on the RiskScore corresponds to optimal approval criteria (balancing profit vs. risk)?
 
-3) Can we dynamically adjust interest rates based on predicted risk and expected loss?
+3) Can we dynamically adjust interest rates based on predicted risk and expected loss? -->
 
 
 ### Dataset
@@ -69,3 +65,4 @@ The dataset includes the following columns:
 | TotalDebtToIncomeRatio | Total debt against income | 
 | LoanApproved | Loan approval status | 
 | RiskScore | Risk assessment score | 
+
