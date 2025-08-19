@@ -73,7 +73,7 @@ The dataset includes the following columns:
     - Presence of any null values (no null values)
     - Checking the datatypes of the columns (float, int and object)
     - Identifying calculated columns so as to retain those and drop the component columns
-        (for instance, there is a annualIncome column which is MonthlyIncome * 12. So, Instead of retaining both the monthly and annual income columns, we can just retain the annual income column.)
+        (for instance, there is a AnnualIncome column which is MonthlyIncome * 12. So, Instead of retaining both the monthly and annual income columns, we can just retain the annual income column.)
 
 2) Data Cleaning
     - Dropping unecessary columns 
