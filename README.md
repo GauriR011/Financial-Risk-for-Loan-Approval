@@ -100,5 +100,27 @@ The dataset includes the following columns:
     - To scale the data to ensure that all records in each column lie in the same range. We use the **Robust Scaler** to scale the data values since it is robust to outliers.  
 
 6) Balancing the data (approved and rejected loan application records)
+    - We have performed Random Under Sampling to balance the number of records from the 2 labels
+    - The proportion of Approved v/s Rejected applications was nearly 25:75
+    - Undersampling does mean loss of valuable data but we did use SMOTE to oversample the minority class but it didn't result in a good model performance.
+    - Hence, we resorted to undersampling as the models performed better during the evaluation process.
+   
 7) Model Training
-8) Model Evaluation
+   - We have used 3 models - **Logistic Regression, Random Forest Classifier and XG Boost**.
+   - We first evaluated the model on the Validation set and on getting a good result, we proceeded to predicting the Test data.
+     
+9) Model Evaluation
+   - We used the following evaluation metrics - **Precision, Recall, F1 Score and Confusion Matrix**.
+   - Here is a summarized **Model Evaluation and Comparison Table** (Evaluation on the Test Dataset):
+     | Model | Class Label | Precision | Recall | F1 Score |
+     | ------------- | ------------- | ------------- | ------------- | ------------- |
+     | Logistic Regression | 0    |   0.95  |    0.86  |    0.90 |
+     |   | 1    |   0.66   |   0.86    |  0.75 |
+     | Random Forest | 0    |   0.99  |    0.98  |    0.99 |
+     | | 1   |    0.93   |   0.98   |   0.96 |
+     | XG Boost | 0   |    1.00  |    0.98   |   0.99 |
+     |  |  1   |    0.94   |   0.99   |   0.97 |
+
+
+   - We can rank the overall performance of the models in the following order: **XG Boost > Random Forest Classifier > Logistic Regression**
+   - Hence, **XG Boost** is our best performing model.
