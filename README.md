@@ -1,7 +1,7 @@
 # Financial-Risk-for-Loan-Approval
 
 <p align="center">
-    <img src="./figures/title_img.png" alt="alt text" width="700">
+    <img src="./figures/title_img.png" alt="alt text" width="800">
 </p>
 
 ## Business Problem: Optimizing Loan Portfolio Profitability While Minimizing Risk Exposure
