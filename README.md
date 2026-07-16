@@ -68,54 +68,82 @@ The dataset includes the following columns:
 
 
 ## Implementation
-1) Understanding the Dataset (performing inintal analysis)
-    - Overall shape of the dataset (20000,36)
-    - Presence of any null values (no null values)
-    - Checking the datatypes of the columns (float, int and object)
+**1) Understanding the Dataset (performing inintal analysis)**
 
-2) Data Cleaning
-    - Dropping unecessary columns 
-    - Cleaning the Application Date column (extracting the month and year from the date)
-    - Truncating the floating point values (rounding to 3 decimal places)
-    - Checking for consistency in column data
+- Overall shape of the dataset (20000,36)
+- Presence of any null values (no null values)
+- Checking the datatypes of the columns (float, int and object)
+- Performing EDA (Statistical Analysis and Data Visualization)
 
-3) Feature Correlation
-    - Checking how much each feature contributed to determining the target column.
-    - We are creating a correlation matrix with the target variable and then sorting the features by the magnitude of correlation.
-    - We are using a heatmap color code the features based on the magnitude.
-    - **Observation**: The following columns play a significant role in determining whether the loan is approved or rejected
-        -  (having positive correlation) 'MonthlyIncome_log', 'NetWorth', 'CreditScore', 'Age', 'EducationLevel_Master', 'LengthOfCreditHistory'
-        -  (having negative correlation) 'DebtToIncomeRatio', 'InterestRate', 'BaseInterestRate', 'LoanAmount'
+**2) Data Cleaning**
 
-    - We now create a subset of the dataset with only these columns.
+- Cleaning the Application Date column (extracting the month and year from the date)
+- Truncating the floating point values (rounding to 3 decimal places)
+- Checking for consistency in column data
+- Feature Engineering (`DebtToIncomeRatio`, `Monthly_LoanToIncomeRatio`)
+- Applying **Log Transformation** to columns to stabilize variance. 
+- Dropping highly correlated features (based on the following step) and retaining only the log transformed variables.       
+[Check the notebook for a detailed reasoning for why specific features were dropped.]
 
-4) Train Test Split
-    - We split the dataset in a **70:15:15 ratio** to create the Train, Validation and Test datasets.
-    - We set the random state to 42 and apply stratification to ensure the proportion of approved and rejected records stay the same in all 3 datasets.
+**3) Feature Correlation**
 
-5) Encoding and Scaling
-    - We now convert all the categorical columns to numeric using the **One Hot Encoder**.
-    - We scale the data to ensure that all records in each column lie in withing similar and comparable range. 
-    We used standard Scaler to scale the column values, since we had already applied log transformation to the data which stabalized the variance and reduced the severity of the outliers.
-    We could have also used the **Robust Scaler** to scale the data values (since it is robust to outliers) if the log-transformed data still exhibited extreme values or heavy tails, which was not so in this case.
+- Checking how much each feature contributed to determining the target column.
+- We are creating a correlation matrix with the target variable and then sorting the features by the magnitude of correlation.
+- We are using a heatmap color code the features based on the magnitude.
+- **Observation**: The following columns play a significant role in determining whether the loan is approved or rejected
+    -  (having positive correlation) `MonthlyIncome_log`, `TotalAssets_log`, `NetWorth_log`, `CreditScore`, `Age`, `LengthOfCreditHistory`
+    -  (having negative correlation) `TotalDebtToIncomeRatio_log`, `DebtToIncomeRatio`, `InterestRate`, `LoanAmount_log`, `BaseInterestRate`
 
-6) Balancing the data (approved and rejected loan application records)
-    - The proportion of Approved v/s Rejected applications was nearly 30:70
-    - Undersampling does mean loss of valuable data and we didn't use SMOTE to oversample the minority class as the classes were largely imbalanced.
-    - Hence, we left the imbalace in the dataset as it is and instead focused on tuning the model parameters to better understand the non-linear relationships in the data.
+<br><br>
+<p align="center">
+    <img src="./figures/FeatureCorrelation.png" alt="alt text" width="500">
+</p>
+
+
+**4) Encoding**
+
+- We now convert all the categorical columns to numeric using the **One Hot Encoder**.
+- The reason why we don't use **Ordinal Encoding** is to avoid introducing a notion of "order" into features where order is NOT inherently present between the categories.
+
+**5) Train Test Split**
+
+- We split the dataset in a **70:15:15 ratio** to create the Train, Validation and Test datasets.
+- We set the random state to 42 and apply stratification to ensure the proportion of approved and rejected records stay the same in all 3 datasets.
+
+**6) Scaling**
+
+- We scale the data to ensure that all records in each column lie in withing similar and comparable range. 
+We used standard Scaler to scale the column values, since we had already applied log transformation to the data which stabalized the variance and reduced the severity of the outliers.
+We could have also used the **Robust Scaler** to scale the data values (since it is robust to outliers) if the log-transformed data still exhibited extreme values or heavy tails, which was not so in this case.
+
+**7) Balancing the data (approved and rejected loan application records)**
+
+- The Approved-to-Rejected loan applications ratio is nearly 25:75, which is a moderate class imbalance.
+- Undersampling would reduce the number of majority-class samples, potentially discarding useful information.
+- Oversampling can increase the risk of overfitting by duplicating or synthetically generating minority-class samples.
+- Since the imbalance is not severe, we leave the imbalace in the dataset as it is and instead focus on tuning the model parameters to better understand the non-linear relationships in the data.
    
-7) Model Training
-   - We have used 3 models - **Logistic Regression, Random Forest Classifier and XG Boost**.
-   - We first evaluated the model on the validation set and on getting an optimal models (after perfoming hyperparameter tuning), we proceeded to predicting the test data.
+**8) Model Training**
 
-8) Hyperparameter Tuning
-    - We have used 2 methods to find the optimal combination of hyperparameters in each model:
-        - **Grid Search CV for Logistic Regression**: As it there are few combinations of hyperparameter and this method tests evey possible combination of parameters. Hence, it won't take a long time to run.
-        - **Random Search CV for Random Forest and XG Boost**: Since there are more combinations of parameters, testing out every combination would not only be time consuming but also computationally expensive. By using Random Search, we can test just a fraction of the combinations while capturing 95%+ of the potential performance boost.
+- We have used 3 models - **Logistic Regression, Random Forest Classifier and XG Boost**.
+- We first evaluated the model on the validation set and on getting an optimal models (after perfoming hyperparameter tuning), we proceeded to predicting the test data.
+
+**9) Hyperparameter Tuning**
+
+- We have used 2 methods to find the optimal combination of hyperparameters in each model:
+    - **Grid Search CV for Logistic Regression**: As it there are few combinations of hyperparameter and this method tests evey possible combination of parameters. Hence, it won't take a long time to run.
+    - **Random Search CV for Random Forest and XG Boost**: Since there are more combinations of parameters, testing out every combination would not only be time consuming but also computationally expensive. By using Random Search, we can test just a fraction of the combinations while capturing 95%+ of the potential performance boost.
      
-9) Model Evaluation
-   - We used the following evaluation metrics - **Precision, Recall, F1 Score and Confusion Matrix, ROC-AUC, PR-AUC**.
-   - We have kept aside Accuracy for now, since this metric proves to be very misleading if the data contains imbalanced classes.
+**10) Model Evaluation**
+
+- We used the following evaluation metrics - **Precision, Recall, F1 Score and Confusion Matrix, ROC-AUC, PR-AUC**.
+- We have kept aside Accuracy for now, since this metric proves to be very misleading if the data contains imbalanced classes.
+- Since the objective is to **identify applicants who are both likely to repay their loans and profitable to approve**, we focus on the **F1-score**, as it provides a balanced measure of precision and recall. 
+    - A _high Precision_ ensures that applicants predicted to be approved are likely to repay their loans, reducing the risk of defaults.
+    - A _high Recall_ ensures that most creditworthy applicants are identified and approved, minimizing missed lending opportunities. 
+    - Therefore, the F1-score is an appropriate metric for balancing loan risk and business profitability.
+
+
 - Here is a summarized **Model Evaluation and Comparison Table** (Evaluation on the **Validation Dataset** (BEFORE TUNING)):
      | Model | Class Label | Precision | Recall | F1 Score |
      | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -126,7 +154,7 @@ The dataset includes the following columns:
      | XG Boost (base) | 0   |    0.97  |    0.97   |   0.97 |
      |  |  1   |    0.91   |   0.91   |   0.91 |
 
-    We can see that XGBoost identifies approximately 10% more churners than Logistic Regression while also maintaining higher precision.
+    We can see that XGBoost identifies approximately 10% more loan application approvals than Logistic Regression while also maintaining higher precision.
 
 
 - Here is a summarized **Model Evaluation and Comparison Table** (Evaluation on the **Validation Dataset** (AFTER TUNING)):
@@ -160,15 +188,26 @@ The dataset includes the following columns:
      | Random Forest | 0.9758 | 0.9327 |
      | XG Boost | 0.9927 | 0.9787 |
 
-<br><br>
+<br>
 
 
 <p align="center">
-    <img src="./figures/image.png" alt="alt text" width="500">
-    <img src="./figures/image-1.png" alt="alt text" width="500">
+    <img src="./figures/ROC.png" alt="alt text" width="500">
+    <img src="./figures/PR_AUC.png" alt="alt text" width="500">
 </p>
 
-### Inference
+
+## Inference
    - We can rank the overall performance of the models in the following order:      
    **XG Boost > Logistic Regression > Random Forest Classifier**
    - Hence, **XG Boost** is our best performing model across all the evaluation metrics.
+
+   Here is the **Feature Importance** Extracted from the trained XG Boost Model:
+
+<p align="center">
+    <img src="./figures/xgb_feature_imp.png" alt="alt text" width="800" height="600">
+</p>
+
+- The feature importance extracted from the trained XGBoost model indicates that `TotalDebtToIncomeRatio_log` is the most influential feature in distinguishing between approved and rejected loan applications. Other important predictors include `MonthlyIncome_log`, `Loan Duration` and `Interest Rate`, all of which contribute significantly to the model's classification decisions.
+
+- Features like `TotalDebtToIncomeRatio_log`, `MonthlyIncome_log`, `InterestRate` and `NetWorth_log` consistently emerged as key predictors in both the correlation analysis with the target variable conducted during data preprocessing and the feature importance analysis of the trained XGBoost model.
