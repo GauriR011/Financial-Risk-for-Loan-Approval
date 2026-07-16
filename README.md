@@ -1,5 +1,9 @@
 # Financial-Risk-for-Loan-Approval
 
+<p align="center">
+    <img src="./figures/title_img.png" alt="alt text" width="700">
+</p>
+
 ## Business Problem: Optimizing Loan Portfolio Profitability While Minimizing Risk Exposure
 **Background:**    
 A financial institution wants to grow its loan portfolio by approving more applications without significantly increasing its default risk. Historically, overly cautious approval strategies have led to lost revenue opportunities, while lenient strategies have increased default rates and write-offs.
