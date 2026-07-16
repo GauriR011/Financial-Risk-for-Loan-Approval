@@ -96,31 +96,56 @@ The dataset includes the following columns:
     - We set the random state to 42 and apply stratification to ensure the proportion of approved and rejected records stay the same in all 3 datasets.
 
 5) Encoding and Scaling
-    - We now convert all the categorical columns to numeric using the **Ordinal Encoder**.
-    - To scale the data to ensure that all records in each column lie in the same range. We use the **Robust Scaler** to scale the data values since it is robust to outliers.  
+    - We now convert all the categorical columns to numeric using the **One Hot Encoder**.
+    - To scale the data to ensure that all records in each column lie in the same range. 
+    We used standard Scaler to scale the column values, since we had already applied log transformation to the data which stabalized the variance and reduced the severity of the outliers.
+    We could have also used the **Robust Scaler** to scale the data values (since it is robust to outliers) if the log-transformed data still exhibited extreme values or heavy tails, which was not so in this case.
 
 6) Balancing the data (approved and rejected loan application records)
     - We have performed Random Under Sampling to balance the number of records from the 2 labels
-    - The proportion of Approved v/s Rejected applications was nearly 25:75
+    - The proportion of Approved v/s Rejected applications was nearly 30:70
     - Undersampling does mean loss of valuable data but we did use SMOTE to oversample the minority class but it didn't result in a good model performance.
-    - Hence, we resorted to undersampling as the models performed better during the evaluation process.
+    - Hence, we left the imbalace in the dataset as it is and instead focused on tuning the model parameters to better understand the non-linear relationships in the data.
    
 7) Model Training
    - We have used 3 models - **Logistic Regression, Random Forest Classifier and XG Boost**.
-   - We first evaluated the model on the Validation set and on getting a good result, we proceeded to predicting the Test data.
+   - We first evaluated the model on the Validation set and on getting an optimal model (after perfoming hyper parameter tuning), we proceeded to predicting the Test data.
+
+8) Hyperparameter Tuning
+    - We have used 2 methods to find the optimal combination of hyperparameters in each model:
+        - Grid Search CV for Logistic Regression : As it there are few combinations of hyperparameter and this method tests evey possible combination of parameters. Hence, it won't take a long time to run.
+        - Random Search CV for Random Forest and XG Boost: Since there are more combinations of parameters, testing out every combination would not only be time consuming but also computationally expensive. By using Random Search, we can test just a fraction of the combinations while capturing 95%+ of the potential performance boost.
      
 9) Model Evaluation
-   - We used the following evaluation metrics - **Precision, Recall, F1 Score and Confusion Matrix**.
-   - Here is a summarized **Model Evaluation and Comparison Table** (Evaluation on the Test Dataset):
+   - We used the following evaluation metrics - **Precision, Recall, F1 Score and Confusion Matrix, ROC-AUC, PR-AUC**.
+   - We have kept aside Accuracy for now, since this metric proves to be very misleading if the data contains imbalanced classes.
+   - Here is a summarized **Model Evaluation and Comparison Table** (Evaluation on the **Validation Dataset** (BEFORE TUNING)):
      | Model | Class Label | Precision | Recall | F1 Score |
      | ------------- | ------------- | ------------- | ------------- | ------------- |
-     | Logistic Regression | 0    |   0.95  |    0.86  |    0.90 |
-     |   | 1    |   0.66   |   0.86    |  0.75 |
-     | Random Forest | 0    |   0.99  |    0.98  |    0.99 |
-     | | 1   |    0.93   |   0.98   |   0.96 |
-     | XG Boost | 0   |    1.00  |    0.98   |   0.99 |
-     |  |  1   |    0.94   |   0.99   |   0.97 |
+     | Logistic Regression (base) | 0    |   0.94  |    0.95  |    0.95 |
+     |   | 1    |   0.84   |   0.80    |  0.82 |
+     | Random Forest (base) | 0    |   0.94  |    0.96  |    0.95 |
+     | | 1   |    0.88   |   0.81   |   0.84 |
+     | XG Boost (base) | 0   |    0.97  |    0.97   |   0.97 |
+     |  |  1   |    0.91   |   0.91   |   0.91 |
 
+- Here is a summarized **Model Evaluation and Comparison Table** (Evaluation on the **Test** Dataset (AFTER TUNING)):
+     | Model | Class Label | Precision | Recall | F1 Score |
+     | ------------- | ------------- | ------------- | ------------- | ------------- |
+     | Logistic Regression (base) | 0    |   0.98  |    0.94  |    0.96 |
+     |   | 1    |   0.84   |   0.94    |  0.89 |
+     | Random Forest (base) | 0    |   0.93  |    0.97  |    0.95 |
+     | | 1   |    0.89   |   0.78   |   0.83 |
+     | XG Boost (base) | 0   |    0.97  |    0.98   |   0.97 |
+     |  |  1   |    0.93   |   0.90   |   0.92 |
+
+
+- ROC-AUC and PR-AUC Scores of the Models:
+     | Model | RUC-AUC | PR-AUC |
+     | ------------- | ------------- | ------------- |
+     | Logistic Regression | 0.9859 | 0.9644 |
+     | Random Forest | 0.9758 | 0.9327 |
+     | XG Boost | 0.9927 | 0.9787 |
 
    - We can rank the overall performance of the models in the following order: **XG Boost > Random Forest Classifier > Logistic Regression**
    - Hence, **XG Boost** is our best performing model.
