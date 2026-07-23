@@ -215,3 +215,12 @@ We could have also used the **Robust Scaler** to scale the data values (since it
 - The feature importance extracted from the trained XGBoost model indicates that `TotalDebtToIncomeRatio_log` is the most influential feature in distinguishing between approved and rejected loan applications. Other important predictors include `MonthlyIncome_log`, `Loan Duration` and `Interest Rate`, all of which contribute significantly to the model's classification decisions.
 
 - Features like `TotalDebtToIncomeRatio_log`, `MonthlyIncome_log`, `InterestRate` and `NetWorth_log` consistently emerged as key predictors in both the correlation analysis with the target variable conducted during data preprocessing and the feature importance analysis of the trained XGBoost model.
+
+
+### Potential Next Steps
+
+- **Feature Pruning:** 
+    Since we have a lot of features that don't contribute significantly towards the classification performance, we could possibly remove the bottom 5 to 10 features without seeing a major drop in the validation or test performances. This would make out model lighter, faster to train and less prone to overfitting.
+
+- **SHAP:** 
+    we know `TotalDebtToIncomeRatio_log` is important, but it doesn't tell you how it affects the decision making. That is, does the value of TotalDebtToIncomeRatio_log positively or negatively influence the loan application approval (higher the value, higher the probability of loan approval OR lower the value and higher the probability of loan approval)? Hence, we need to run a SHAP (SHapley Additive exPlanations) analysis on the XG Boost model.
