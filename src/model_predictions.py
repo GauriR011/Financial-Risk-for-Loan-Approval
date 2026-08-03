@@ -28,8 +28,7 @@ def main():
     try:
         final_pipeline = joblib.load(full_model_path)
     except FileNotFoundError:
-        print(f"Error: The file '{full_model_path}' does not exist. Please train the model first.")
-        return
+        raise FileNotFoundError(f"Error: The file '{full_model_path}' does not exist. Please train the model first.")
     except Exception as e:
         print(f"Unexpected error loading model: {e}")
         return
