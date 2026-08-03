@@ -66,9 +66,9 @@ def main():
         elif args.model == "lr":
             # raise ValueError("--tune currently provides a search space for random_forest only.")
             parameter_space = {
-                "C": [0.1, 1, 10], # Controls how much you penalize the model for complexity. Smaller values, more penalty.
-                "solver": ["liblinear", "lbfgs"],
-                "class_weight": [None, "balanced"]
+                "model__C": [0.1, 1, 10], # Controls how much you penalize the model for complexity. Smaller values, more penalty.
+                "model__solver": ["liblinear", "lbfgs"],
+                "model__class_weight": [None, "balanced"]
             }
             search = tune_model(pipeline, parameter_space, X_train, y_train, n_iter=15, cv=5)
             pipeline = search.best_estimator_
@@ -76,11 +76,11 @@ def main():
             print(f"Best CV F1: {search.best_score_:.3f}")
         else:
             parameter_space = {
-                "n_estimators": [100, 200, 300],
-                "learning_rate": [0.01, 0.05, 0.1],
-                "max_depth": [3, 5, 7],
-                "subsample": [0.8, 1.0],
-                "colsample_bytree": [0.8, 1.0]
+                "model__n_estimators": [100, 200, 300],
+                "model__learning_rate": [0.01, 0.05, 0.1],
+                "model__max_depth": [3, 5, 7],
+                "model__subsample": [0.8, 1.0],
+                "model__colsample_bytree": [0.8, 1.0]
             }
             search = tune_model(pipeline, parameter_space, X_train, y_train, n_iter=15, cv=5)
             pipeline = search.best_estimator_

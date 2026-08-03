@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pipeline import Pipeline
+from sklearn.pipeline import Pipeline
 import joblib
 import matplotlib.pyplot as plt
 from sklearn.metrics import(

@@ -45,6 +45,8 @@ class FeatureEngineering(BaseEstimator, TransformerMixin):
             corrected_years = corrected_years.mask(corrected_years.between(lower, upper), replacement)
         corrected_years = corrected_years.mask(corrected_years >= 2067, 2024)
 
+        return corrected_years
+
     def transform(self, X: pd.DataFrame):
 
         df = X.copy()
@@ -72,7 +74,7 @@ class FeatureEngineering(BaseEstimator, TransformerMixin):
             if column in df.columns: 
                 df[f"{column}_log"] = np.log1p(df[column].clip(lower=0))
 
-        total_columns_to_drop = set(self.columns_to_remove) | set(self.drop_columns or [])
+        total_columns_to_drop = set(self.columns_to_remove) | set(self.drop_additional_cols or [])
         df.drop(columns = list(total_columns_to_drop), inplace = True, errors = "ignore")
 
         return df

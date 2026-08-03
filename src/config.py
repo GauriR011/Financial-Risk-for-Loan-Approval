@@ -9,7 +9,9 @@ load_dotenv()
 RANDOM_STATE = 42
 TARGET_CLASSIFICATION = "LoanApproved"
 
-PROJECT_ROOT = Path(os.getenv("ROOT_PATH"))
+root_path_env = os.getenv("ROOT_PATH")
+# Setting a local-path fallback incase Path(os.getenv("ROOT_PATH")) crashes.
+PROJECT_ROOT = Path(root_path_env)  if root_path_env else Path.cwd()
 DATA_DIR_PATH = PROJECT_ROOT / "data files"
 DATA_FILE = PROJECT_ROOT / "data files" / "Loan.csv"
 DEFAULT_MODEL_DIR = PROJECT_ROOT / "trained models"

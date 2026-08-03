@@ -6,7 +6,7 @@ from sklearn.pipeline import Pipeline
 from.config import LEAKAGE_OR_UNUSED_COLUMNS, RANDOM_STATE
 from .features import FeatureEngineering, scale_and_encode
 
-def buid_pipeline(model, X_train: pd.DataFrame) -> Pipeline:
+def build_pipeline(model, X_train: pd.DataFrame) -> Pipeline:
     """Create one end-to-end, leakage-safe scikit-learn pipeline."""
 
     return Pipeline([
@@ -28,7 +28,7 @@ def tune_model(
     """Tune the whole pipeline using training folds only."""
 
     if search_type == "grid":
-        search = GridSearchCV(pipeline, parameter_space, cv = cv, scoring=scoring, random_state = RANDOM_STATE, n_jobs = -1)
+        search = GridSearchCV(pipeline, parameter_space, cv = cv, scoring=scoring, n_jobs = -1)
     else:
         search = RandomizedSearchCV(pipeline, parameter_space, cv=cv, n_iter=n_iter, scoring=scoring, random_state=RANDOM_STATE, n_jobs=-1) 
 
