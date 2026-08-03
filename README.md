@@ -13,32 +13,32 @@ Use predictive modeling to identify applicants who are both likely to repay thei
  
 
 ### Folder structure
-loan-default-project/
-│
-├── data/
-│   ├── raw/
-│   └── processed/
-│
-├── notebooks/
-│   └── exploration.ipynb
-│
-├── src/
-│   ├── __init__.py
-│   ├── data.py
-│   ├── features.py
-│   ├── models.py
-│   ├── train.py
-│   ├── evaluate.py
-│   └── predict.py
-│
-├── models/
-│   └── loan_default_pipeline.joblib
-│
-├── tests/
-│
-├── requirements.txt
-├── config.py
-└── README.md
+loan-default-project/       
+│       
+├── data/                       
+│   ├── raw/        
+│   └── processed/              
+│       
+├── notebooks/      
+│   └── exploration.ipynb       
+│       
+├── src/                
+│   ├── __init__.py     
+│   ├── data.py     
+│   ├── features.py     
+│   ├── models.py       
+│   ├── train.py        
+│   ├── evaluate.py     
+│   └── predict.py      
+│       
+├── models/     
+│   └── loan_default_pipeline.joblib        
+│       
+├── tests/      
+│       
+├── requirements.txt        
+├── config.py           
+└── README.md       
 
 ### Key Question to Address:
 <!-- ##### Risk Assessment (Regression Task)
