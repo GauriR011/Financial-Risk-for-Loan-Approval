@@ -94,18 +94,7 @@ def main():
 
     evaluate_classifier(pipeline, X_val, y_val, "Validation")
 
-
-    # Refitting after model selection
-    X = pd.concat([X_train, X_val])
-    y = pd.concat([y_train, y_val])
-
-    final_pipeline = build_pipeline(pipeline, X)
-    final_pipeline.fit(X, y)
-
-    evaluate_classifier(final_pipeline, X_test, y_test, "Test")
-
-    
-    saved_path = save_pipeline(final_pipeline, args.model_path / f"{args.model}_trained_pipeline.joblib")
+    saved_path = save_pipeline(pipeline, args.model_path / f"{args.model}_trained_pipeline.joblib")
     print(f"Saved complete pipeline: {saved_path}")
 
 
