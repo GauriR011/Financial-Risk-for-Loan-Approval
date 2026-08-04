@@ -21,7 +21,7 @@ class FeatureEngineering(BaseEstimator, TransformerMixin):
         "ApplicationDate", "AnnualIncome", "Experience", "TotalAssets",
         "TotalLiabilities", "Monthly_LoanToIncomeRatio", "MonthlyDebtPayments",
         "LoanAmount", "MonthlyIncome", "SavingsAccountBalance",
-        "CheckingAccountBalance", "MonthlyLoanPayment", "TotalDebtToIncomeRatio", "NetWorth",
+        "CheckingAccountBalance", "MonthlyLoanPayment", "TotalDebtToIncomeRatio",
         'AnnualIncome_log'
     ]
 
@@ -54,14 +54,44 @@ class FeatureEngineering(BaseEstimator, TransformerMixin):
         print("Starting data transformation... - features.py")
         df = X.copy()
 
+        #Fill completely missing/unpassed log columns with NaN so operations don't fail
+        for column in self.log_transform_columns:
+            if column not in df.columns:
+                df[column] = np.nan
+
         # Creating new features
+
+        # Monthly Loan Payment
+        if {"InterestRate", "LoanDuration", "LoanAmount"}.issubset(df.columns):
+            # 1. Convert annual InterestRate to monthly rate
+            r = df["InterestRate"] / 12
+
+            # 2. Extract duration in months and principal
+            n = df["LoanDuration"]
+            P = df["LoanAmount"]
+
+            # 3. Calculate MonthlyLoanPayment using the amortization formula
+            # M = P * [r(1 + r)^n] / [(1 + r)^n - 1]
+            df["MonthlyLoanPayment"] = (P * (r * (1 + r) ** n) / (((1 + r) ** n) - 1))
+
+
+        # DebtToIncomeRatio
         if {'MonthlyDebtPayments', 'MonthlyIncome'}.issubset(df.columns):
             income = df["MonthlyIncome"].replace(0, np.nan)
             df['DebtToIncomeRatio'] = df['MonthlyDebtPayments'] / income
 
-        if {"MonthlyLoanPayment", "MonthlyIncome"}.issubset(df.columns):
+        # Monthly_LoanToIncomeRatio
+        if {"MonthlyIncome"}.issubset(df.columns):
             income = df["MonthlyIncome"].replace(0, np.nan)
             df["Monthly_LoanToIncomeRatio"] = df["MonthlyLoanPayment"] / income
+
+        # TotalDebtToIncomeRatio
+        if {"MonthlyIncome", "MonthlyDebtPayments"}.issubset(df.columns):
+            income = df["MonthlyIncome"].replace(0, np.nan)
+            df["TotalDebtToIncomeRatio"] = (df["MonthlyDebtPayments"] + df["MonthlyLoanPayment"]) / income
+
+        if{"TotalAssets", "TotalLiabilities"}.issubset(df.columns):
+            df['NetWorth'] = df["TotalAssets"] - df["TotalLiabilities"]
 
         # Extracting Application Month and Year from Application Date
         if "ApplicationDate" in df.columns:
@@ -75,7 +105,18 @@ class FeatureEngineering(BaseEstimator, TransformerMixin):
         # Apply log transformation
         for column in self.log_transform_columns:
             if column in df.columns: 
-                df[f"{column}_log"] = np.log1p(df[column].clip(lower=0))
+                # Convert to numeric, replace non-numeric/None with NaN
+                numeric_series = pd.to_numeric(df[column], errors='coerce')
+                
+                # Impute missing values with 0 temporarily for log transform (or median if needed)
+                # clip(lower=0) prevents negative numbers from breaking log1p
+                imputed_series = numeric_series.fillna(0).clip(lower=0)
+                
+                # Assign log transformed values back
+                df[f"{column}_log"] = np.log1p(imputed_series)
+                
+                # Re-insert NaN where original data was missing so SimpleImputer can handle it later
+                df.loc[numeric_series.isna(), f"{column}_log"] = np.nan
 
         # dropping columns
         total_columns_to_drop = set(self.columns_to_remove) | set(self.drop_additional_cols or [])
@@ -83,43 +124,6 @@ class FeatureEngineering(BaseEstimator, TransformerMixin):
 
         print("Data transformation successful - features.py")
         return df
-
-
-# def extract_feature_groups(X_train: pd.DataFrame, drop_columns=None):
-#     """Determine numeric and categorical columns of the dataset"""
-
-#     # apply transformations to the training data
-#     tranformations = FeatureEngineering(drop_additional_cols = drop_columns)
-#     all_columns = tranformations.fit_transform(X_train)
-
-#     # extract the categorical and numerical columns from the transformed data
-#     categorical_cols = all_columns.select_dtypes(include = ["object", "category", "bool"]).columns.tolist()
-#     numerical_cols = all_columns.select_dtypes(include = np.number).columns.tolist()
-
-#     return categorical_cols,  numerical_cols
-
-
-
-# def scale_and_encode(X_train: pd.DataFrame, drop_columns = None) -> ColumnTransformer:
-#     """Build a pipeline with imputation, scaling, and one-hot encoding steps."""
-#     print("Starting scaling and encoding... - features.py")
-#     categorical_cols, numerical_cols = extract_feature_groups(X_train, drop_columns=drop_columns)
-
-#     categorical_pipeline = Pipeline([
-#         ("imputer", SimpleImputer(strategy="most_frequent")),
-#         ("encoder", OneHotEncoder(handle_unknown="ignore")),
-#     ])
-
-#     numerical_pipeline = Pipeline([
-#         ("imputer", SimpleImputer(strategy="median")),
-#         ("scaler", StandardScaler())
-#     ])
-
-#     print("Scaling and encoding successful - features.py")
-#     return ColumnTransformer([
-#         ("categorical", categorical_pipeline, categorical_cols),
-#         ("numeric", numerical_pipeline, numerical_cols),
-#     ], remainder="drop")
 
 def scale_and_encode() -> ColumnTransformer:
     """Builds the encoding and scaling step dynamically without needing X_train."""

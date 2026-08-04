@@ -1,7 +1,7 @@
 """Streamlit interface for a saved loan-approval prediction pipeline.
 
 Run from the project root:
-    streamlit run loan_approval_streamlit_dashboard/app.py
+    streamlit run app.py
 """
 from pathlib import Path
 
@@ -15,6 +15,10 @@ import streamlit as st
 from src.config import DATA_FILE, DEFAULT_MODEL_DIR, TARGET_CLASSIFICATION
 from src.data import load_data
 
+import sys
+import src.features as legacy_features
+
+sys.modules["features"] = legacy_features
 
 st.set_page_config(page_title="Loan Approval Predictor", page_icon="🏦", layout="wide")
 
@@ -24,10 +28,20 @@ DEFAULT_MODEL_PATH = DEFAULT_MODEL_DIR / "xgb_final_production_pipeline.joblib"
 # for the first prediction. All remaining training columns stay optional and
 # are imputed by the fitted pipeline when left blank.
 REQUIRED_COLUMNS = {
-    "Age", "MonthlyIncome", "MonthlyDebtPayments", "CreditScore", "LoanAmount",
-    "LoanDuration", "InterestRate", "TotalDebtToIncomeRatio", "PaymentHistory",
-    "LengthOfCreditHistory", "EmploymentStatus", "LoanPurpose",
+    "MonthlyIncome", "MonthlyDebtPayments", "LoanAmount",
+    "LoanDuration", "InterestRate", "BankruptcyHistory", 'PreviousLoanDefaults',
+    "EducationLevel", "EmploymentStatus", "TotalAssets", "TotalLiabilities",  # "NetWorth", 
+    "HomeOwnershipStatus", "NumberOfDependents",
+    "MaritalStatus", "LoanPurpose"
 }
+
+# Monthly Income & Monthly Debt, 
+# Loan Duration (in months), Loan Amount, 
+# Bankruptcy History(1/0), Previous Loan Defaults (1/0), 
+# Education Level (categorical), Employment Status (categorical), 
+# Interest Rate / Base Interest Rate, Net Worth / Total Assets, 
+# Length of Credit History, Home Ownership Status (categorical), 
+# Loan Purpose, Marital Status, Dependents
 
 FIELD_GROUPS = {
     "Personal profile": {
@@ -54,9 +68,11 @@ FIELD_GROUPS = {
 
 
 @st.cache_resource
+# def load_pipeline(model_path: str):
+#     """Load once per Streamlit session, rather than on every widget update."""
+#     return Path(joblib.load(model_path))
 def load_pipeline(model_path: str):
-    """Load once per Streamlit session, rather than on every widget update."""
-    return Path(joblib.load(model_path))
+    return joblib.load(model_path)
 
 
 @st.cache_data
@@ -185,12 +201,12 @@ def main():
         "This is not a real lending decision or financial advice. A model prediction should never be the sole basis for a loan decision."
     )
 
-    with st.sidebar:
-        st.header("Model settings")
-        model_path = st.text_input("Production model path", str(DEFAULT_MODEL_PATH))
-        st.caption("Use the final production pipeline created after test evaluation.")
-
+    # with st.sidebar:
+        # st.header("Model settings")
+        # model_path = st.text_input("Production model path", str(DEFAULT_MODEL_PATH))
+        # st.caption("Use the final production pipeline created after test evaluation.")
     try:
+        model_path = DEFAULT_MODEL_PATH
         reference_data = load_reference_data(str(DATA_FILE))
         pipeline = load_pipeline(model_path)
     except FileNotFoundError as error:
@@ -210,9 +226,9 @@ def main():
             assigned.update(available)
             render_input_section(section, available, reference_data, values)
 
-        extra_columns = [column for column in raw_features if column not in assigned]
-        with st.expander("Additional optional information"):
-            render_input_section("Additional details", extra_columns, reference_data, values)
+        # extra_columns = [column for column in raw_features if column not in assigned]
+        # with st.expander("Additional optional information"):
+        #     render_input_section("Additional details", extra_columns, reference_data, values)
 
         submitted = st.form_submit_button("Get prediction", type="primary")
 

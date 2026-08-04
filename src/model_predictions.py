@@ -2,10 +2,9 @@ import pandas as pd
 import joblib
 import argparse
 from pathlib import Path
-from evaluation import save_pipeline
+from evaluation import save_pipeline, evaluate_classifier
 from config import DATA_FILE, DEFAULT_MODEL_DIR
 from data import load_data, split_data
-from evaluation import evaluate_classifier
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluating a trained model.")

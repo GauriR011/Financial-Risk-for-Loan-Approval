@@ -10,7 +10,12 @@ A financial institution wants to grow its loan portfolio by approving more appli
 
 **Objective:**    
 Use predictive modeling to identify applicants who are both likely to repay their loans and profitable to approve, balancing approval rates with financial risk and expected returns.
- 
+
+
+### Streamlit Interface
+![alt text](./figures/streamlit1.png)
+![alt text](./figures/streamlit1.png)
+![alt text](image.png)
 
 ### Folder structure
 Financial-Risk-for-Loan-Approval/       

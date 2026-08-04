@@ -88,13 +88,15 @@ def main():
 
     else:
         print("Training the model with default settings")
-        pipeline.fit(X_train, y_train)
+        # pipeline.fit(X_train, y_train)
 
-        # pipeline.named_steps["preprocessing"].set_output(transform="pandas")
-        # X_train_preprocessed = pipeline[:-1].fit_transform(X_train, y_train)
+        pipeline.named_steps["preprocessing"].set_output(transform="pandas")
+        X_train_preprocessed = pipeline[:-1].fit_transform(X_train, y_train)
 
-        # print(f"Preprocessed shape: {X_train_preprocessed.shape}")
-        # print(X_train_preprocessed.columns.tolist())
+        print(f"Preprocessed shape: {X_train_preprocessed.shape}")
+        print(X_train_preprocessed.columns.tolist())
+
+    return
 
     print("Evaluating the model on Validation set")
     if args.tune is not None:
