@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.compose import ColumnTransformer
+from sklearn.compose import ColumnTransformer, make_column_selector
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -21,8 +21,11 @@ class FeatureEngineering(BaseEstimator, TransformerMixin):
         "ApplicationDate", "AnnualIncome", "Experience", "TotalAssets",
         "TotalLiabilities", "Monthly_LoanToIncomeRatio", "MonthlyDebtPayments",
         "LoanAmount", "MonthlyIncome", "SavingsAccountBalance",
-        "CheckingAccountBalance", "MonthlyLoanPayment", "TotalDebtToIncomeRatio", "NetWorth"
+        "CheckingAccountBalance", "MonthlyLoanPayment", "TotalDebtToIncomeRatio", "NetWorth",
+        'AnnualIncome_log'
     ]
+
+    
 
     def __init__(self, drop_additional_cols = None):
         # defining hyperparameters
@@ -44,11 +47,11 @@ class FeatureEngineering(BaseEstimator, TransformerMixin):
         for lower, upper, replacement in mappings:
             corrected_years = corrected_years.mask(corrected_years.between(lower, upper), replacement)
         corrected_years = corrected_years.mask(corrected_years >= 2067, 2024)
-
+        print("Application year modified successfully - features.py")
         return corrected_years
 
     def transform(self, X: pd.DataFrame):
-
+        print("Starting data transformation... - features.py")
         df = X.copy()
 
         # Creating new features
@@ -74,35 +77,57 @@ class FeatureEngineering(BaseEstimator, TransformerMixin):
             if column in df.columns: 
                 df[f"{column}_log"] = np.log1p(df[column].clip(lower=0))
 
+        # dropping columns
         total_columns_to_drop = set(self.columns_to_remove) | set(self.drop_additional_cols or [])
         df.drop(columns = list(total_columns_to_drop), inplace = True, errors = "ignore")
 
+        print("Data transformation successful - features.py")
         return df
 
 
-def extract_feature_groups(X_train: pd.DataFrame, drop_columns=None):
-    """Determine numeric and categorical columns of the dataset"""
+# def extract_feature_groups(X_train: pd.DataFrame, drop_columns=None):
+#     """Determine numeric and categorical columns of the dataset"""
 
-    # apply transformations to the training data
-    tranformations = FeatureEngineering(drop_additional_cols = drop_columns)
-    all_columns = tranformations.fit_transform(X_train)
+#     # apply transformations to the training data
+#     tranformations = FeatureEngineering(drop_additional_cols = drop_columns)
+#     all_columns = tranformations.fit_transform(X_train)
 
-    # extract the categorical and numerical columns from the transformed data
-    categorical_cols = all_columns.select_dtypes(include = ["object", "category", "bool"]).columns.tolist()
-    numerical_cols = all_columns.select_dtypes(include = np.number).columns.tolist()
+#     # extract the categorical and numerical columns from the transformed data
+#     categorical_cols = all_columns.select_dtypes(include = ["object", "category", "bool"]).columns.tolist()
+#     numerical_cols = all_columns.select_dtypes(include = np.number).columns.tolist()
 
-    return categorical_cols,  numerical_cols
+#     return categorical_cols,  numerical_cols
 
 
 
-def scale_and_encode(X_train: pd.DataFrame, drop_columns = None) -> ColumnTransformer:
-    """Build a pipeline with imputation, scaling, and one-hot encoding steps."""
+# def scale_and_encode(X_train: pd.DataFrame, drop_columns = None) -> ColumnTransformer:
+#     """Build a pipeline with imputation, scaling, and one-hot encoding steps."""
+#     print("Starting scaling and encoding... - features.py")
+#     categorical_cols, numerical_cols = extract_feature_groups(X_train, drop_columns=drop_columns)
 
-    categorical_cols, numerical_cols = extract_feature_groups(X_train, drop_columns=drop_columns)
+#     categorical_pipeline = Pipeline([
+#         ("imputer", SimpleImputer(strategy="most_frequent")),
+#         ("encoder", OneHotEncoder(handle_unknown="ignore")),
+#     ])
+
+#     numerical_pipeline = Pipeline([
+#         ("imputer", SimpleImputer(strategy="median")),
+#         ("scaler", StandardScaler())
+#     ])
+
+#     print("Scaling and encoding successful - features.py")
+#     return ColumnTransformer([
+#         ("categorical", categorical_pipeline, categorical_cols),
+#         ("numeric", numerical_pipeline, numerical_cols),
+#     ], remainder="drop")
+
+def scale_and_encode() -> ColumnTransformer:
+    """Builds the encoding and scaling step dynamically without needing X_train."""
+    print("Starting scaling and encoding... - features.py")
 
     categorical_pipeline = Pipeline([
         ("imputer", SimpleImputer(strategy="most_frequent")),
-        ("encoder", OneHotEncoder(handle_unknown="ignore")),
+        ("encoder", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
     ])
 
     numerical_pipeline = Pipeline([
@@ -110,7 +135,10 @@ def scale_and_encode(X_train: pd.DataFrame, drop_columns = None) -> ColumnTransf
         ("scaler", StandardScaler())
     ])
 
+    print("Scaling and encoding successful - features.py")
+
+    # make_column_selector inspects the incoming DataFrame dynamically during pipeline.fit()
     return ColumnTransformer([
-        ("categorical", categorical_pipeline, categorical_cols),
-        ("numeric", numerical_pipeline, numerical_cols),
+        ("cat", categorical_pipeline, make_column_selector(dtype_include=["object", "category", "bool"])),
+        ("num", numerical_pipeline, make_column_selector(dtype_include=np.number)),
     ], remainder="drop")

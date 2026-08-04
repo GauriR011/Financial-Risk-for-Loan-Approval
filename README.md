@@ -13,31 +13,35 @@ Use predictive modeling to identify applicants who are both likely to repay thei
  
 
 ### Folder structure
-loan-default-project/       
+Financial-Risk-for-Loan-Approval/       
 │       
-├── data/                       
-│   ├── raw/        
-│   └── processed/              
+├── data files/  
+|
+├── figures/                                 
 │       
 ├── notebooks/      
-│   └── exploration.ipynb       
+│   |── modular pipeline.ipynb       
+│   └── original.ipynb   
 │       
 ├── src/                
-│   ├── __init__.py     
+│   ├── __init__.py    
+│   ├── config.py  
 │   ├── data.py     
 │   ├── features.py     
-│   ├── models.py       
-│   ├── train.py        
-│   ├── evaluate.py     
-│   └── predict.py      
+│   ├── model_predictions.py       
+│   ├── model_training.py        
+│   ├── evaluation.py     
+│   └── pipeline.py      
 │       
-├── models/     
-│   └── loan_default_pipeline.joblib        
+├── trained models/     
+├── notebooks/      
+│   |── notebook models/       
+│   └── pipeline models/       
 │       
-├── tests/      
-│       
+├── app.py 
 ├── requirements.txt        
-├── config.py           
+├── .env         
+├── .gitignore  
 └── README.md       
 
 ### Key Question to Address:
@@ -178,27 +182,41 @@ We could have also used the **Robust Scaler** to scale the data values (since it
 
 
 - Here is a summarized **Model Evaluation and Comparison Table** (Evaluation on the **Validation Dataset** (BEFORE TUNING)):
-     | Model | Class Label | Precision | Recall | F1 Score |
-     | ------------- | ------------- | ------------- | ------------- | ------------- |
-     | Logistic Regression (base) | 0    |   0.94  |    0.95  |    0.95 |
-     |   | 1    |   0.84   |   0.80    |  0.82 |
-     | Random Forest (base) | 0    |   0.94  |    0.96  |    0.95 |
-     | | 1   |    0.88   |   0.81   |   0.84 |
-     | XG Boost (base) | 0   |    0.97  |    0.97   |   0.97 |
-     |  |  1   |    0.91   |   0.91   |   0.91 |
+     | Model | Class Label | Precision | Recall | F1 Score | Accuracy |
+     | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+     | Logistic Regression (base) | 0    |   0.985  |    0.936  |    0.960 | 0.940
+     |   | 1    |   0.824   |   0.954    |  0.884 | |
+     | Random Forest (base) | 0    |   0.941  |    0.962  |    0.951 | 0.925 |
+     | | 1   |    0.871   |   0.808   |   0.838 | |
+     | XG Boost (base) | 0   |    0.971  |    0.972   |   0.972 | 0.957 |
+     |  |  1   |    0.912   |   0.908   |   0.910 | |
 
     We can see that XGBoost identifies approximately 10% more loan application approvals than Logistic Regression while also maintaining higher precision.
 
 
+- ROC-AUC scores (BEFORE TUNING)
+     | Model | ROC-AUC | Average Precision (PR-AUC) |
+     | ------------- | ------------- | ------------- | 
+     | Logistic Regression (base) |  0.988  |  0.969  | 
+     | Random Forest (base) |  0.975  |  0.934  | 
+     | XG Boost (base) |  0.992  |  0.976  | 
+
 - Here is a summarized **Model Evaluation and Comparison Table** (Evaluation on the **Validation Dataset** (AFTER TUNING)):
-     | Model | Class Label | Precision | Recall | F1 Score |
-     | ------------- | ------------- | ------------- | ------------- | ------------- |
-     | Logistic Regression | 0    |   0.98  |    0.94  |    0.96 |
-     |   | 1    |   0.82   |   0.95    |  0.88 |
-     | Random Forest | 0    |   0.94  |    0.96  |    0.95 |
-     | | 1   |    0.88   |   0.81   |   0.84 |
-     | XG Boost | 0   |    0.97  |    0.97   |   0.97 |
-     |  |  1   |    0.92   |   0.92   |   0.92 |
+     | Model | Class Label | Precision | Recall | F1 Score | Accuracy |
+     | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+     | Logistic Regression | 0    |   0.968  |    0.969  |    0.968 | 0.952 |
+     |   | 1    |    0.901   |   0.897    |  0.899 | |
+     | Random Forest | 0    |   0.942  |    0.963  |    0.952 | 0.926 |
+     | | 1   |    0.872   |   0.810   |   0.840 |
+     | XG Boost | 0   |    0.973  |    0.975   |   0.974 | 0.960 |
+     |  |  1   |    0.919   |   0.914   |   0.916 | |
+
+- ROC-AUC scores (AFTER TUNING)
+     | Model | ROC-AUC | Average Precision (PR-AUC) | Best Model Parameters |
+     | ------------- | ------------- | ------------- | ------------- |
+     | Logistic Regression |  0.988  |  0.969  | {'model__C': 10, 'model__class_weight': None, 'model__solver': 'liblinear'} |
+     | Random Forest |  0.976  |  0.936  | {'model__n_estimators': 200, 'model__min_samples_split': 2, 'model__min_samples_leaf': 1, 'model__max_features': 'sqrt', 'model__max_depth': None} |
+     | XG Boost |  0.993  |  0.980  | {'model__subsample': 1.0, 'model__n_estimators': 300, 'model__max_depth': 3, 'model__learning_rate': 0.1, 'model__colsample_bytree': 1.0} |
 
     We can see the improvement in the model perfromance on Logistic Regression and XG Boost models upon performing hyperparameter tuning. However, the performance of Random Forest seems to remain unchanged.  
     A possible reason to this may be that the RandomizedSearchCV only sampled a fraction of the grid (i.e., 15 out of 162 combinations), and hence, it may have missed to test the perfect combination of parameters.
@@ -206,20 +224,20 @@ We could have also used the **Robust Scaler** to scale the data values (since it
 - Here is a summarized **Model Evaluation and Comparison Table** (Evaluation on the **Test** Dataset):
      | Model | Class Label | Precision | Recall | F1 Score |
      | ------------- | ------------- | ------------- | ------------- | ------------- |
-     | Logistic Regression | 0    |   0.98  |    0.94  |    0.96 |
-     |   | 1    |   0.84   |   0.94    |  0.89 |
-     | Random Forest | 0    |   0.93  |    0.97  |    0.95 |
-     | | 1   |    0.89   |   0.78   |   0.83 |
-     | XG Boost | 0   |    0.97  |    0.98   |   0.97 |
-     |  |  1   |    0.93   |   0.90   |   0.92 |
+     | Logistic Regression | 0    |   0.980  |    0.943  |    0.961 |
+     |   | 1    |   0.837   |   0.937    |  0.884 |
+     | Random Forest | 0    |   0.934  |    0.968  |    0.951 |
+     | | 1   |    0.885   |   0.782   |   0.830 |
+     | XG Boost | 0   |    0.968  |    0.981   |   0.975 |
+     |  |  1   |    0.936   |   0.898   |   0.917 |
 
 
 - ROC-AUC and PR-AUC Scores of the Models:
-     | Model | RUC-AUC | PR-AUC |
+     | Model | RUC-AUC | Average Precision (PR-AUC) |
      | ------------- | ------------- | ------------- |
-     | Logistic Regression | 0.9859 | 0.9644 |
-     | Random Forest | 0.9758 | 0.9327 |
-     | XG Boost | 0.9927 | 0.9787 |
+     | Logistic Regression | 0.986 | 0.964 |
+     | Random Forest | 0.976 | 0.933 |
+     | XG Boost | 0.993 | 0.979 |
 
 <br>
 

@@ -15,6 +15,7 @@ PROJECT_ROOT = Path(root_path_env)  if root_path_env else Path.cwd()
 DATA_DIR_PATH = PROJECT_ROOT / "data files"
 DATA_FILE = PROJECT_ROOT / "data files" / "Loan.csv"
 DEFAULT_MODEL_DIR = PROJECT_ROOT / "trained models" / "pipeline"
+MODEL_EVAL_FIGURES_DIR = PROJECT_ROOT / "model_evaluation_figs"
 
 # Exclude variables unavailable at the time of an approval decision, or likely
 # to encode the decision itself. Confirm this with the business before changing.
