@@ -102,4 +102,4 @@ if __name__ == "__main__":
     main()
 
 # sample terminal command
-# python models.py --model xgboost
+# python models.py --model lr

@@ -56,7 +56,7 @@ FIELD_GROUPS = {
 @st.cache_resource
 def load_pipeline(model_path: str):
     """Load once per Streamlit session, rather than on every widget update."""
-    return joblib.load(model_path)
+    return Path(joblib.load(model_path))
 
 
 @st.cache_data
