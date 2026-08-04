@@ -14,20 +14,19 @@ Use predictive modeling to identify applicants who are both likely to repay thei
 
 ### Streamlit Interface
 ![alt text](./figures/streamlit1.png)
-![alt text](./figures/streamlit1.png)
-![alt text](image.png)
+![alt text](./figures/streamlit2.png)
+![alt text](./figures/streamlit3.png)
+![alt text](./figures/streamlit_4.png)
+![alt text](./figures/streamlit_5.png)
 
 ### Folder structure
 Financial-Risk-for-Loan-Approval/       
 │       
 ├── data files/  
-|
-├── figures/                                 
-│       
+├── figures/                                      
 ├── notebooks/      
 │   |── modular pipeline.ipynb       
-│   └── original.ipynb   
-│       
+│   └──  original.ipynb         
 ├── src/                
 │   ├── __init__.py    
 │   ├── config.py  
@@ -36,13 +35,11 @@ Financial-Risk-for-Loan-Approval/
 │   ├── model_predictions.py       
 │   ├── model_training.py        
 │   ├── evaluation.py     
-│   └── pipeline.py      
-│       
+│   └── pipeline.py          
 ├── trained models/     
 ├── notebooks/      
 │   |── notebook models/       
-│   └── pipeline models/       
-│       
+│   └── pipeline models/            
 ├── app.py 
 ├── requirements.txt        
 ├── .env         
