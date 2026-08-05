@@ -271,5 +271,7 @@ We could have also used the **Robust Scaler** to scale the data values (since it
 - **Feature Pruning:** 
     Since we have a lot of features that don't contribute significantly towards the classification performance, we could possibly remove the bottom 5 to 10 features without seeing a major drop in the validation or test performances. This would make out model lighter, faster to train and less prone to overfitting.
 
+<!--
 - **SHAP:** 
-    we know `TotalDebtToIncomeRatio_log` is important, but it doesn't tell you how it affects the decision making. That is, does the value of TotalDebtToIncomeRatio_log positively or negatively influence the loan application approval (higher the value, higher the probability of loan approval OR lower the value and higher the probability of loan approval)? Hence, we need to run a SHAP (SHapley Additive exPlanations) analysis on the XG Boost model.
+    we know `TotalDebtToIncomeRatio_log` is important, but it doesn't tell you how it affects the decision making. That is, does the value of TotalDebtToIncomeRatio_log positively or negatively influence the loan application approval (higher the value, higher the probability of loan approval OR lower the value and higher the probability of loan approval)? Hence, we need to run a SHAP (SHapley Additive exPlanations) analysis on the XG Boost model. 
+-->
