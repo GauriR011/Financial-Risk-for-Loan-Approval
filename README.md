@@ -40,7 +40,7 @@ Financial-Risk-for-Loan-Approval/
 ├── notebooks/      
 │   |── notebook models/       
 │   └── pipeline models/            
-├── app.py 
+├── app.py         
 ├── requirements.txt        
 ├── .env         
 ├── .gitignore  
