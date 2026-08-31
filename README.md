@@ -139,15 +139,16 @@ The dataset includes the following columns:
 </p>
 
 
-**4) Encoding**
+**4) Train Test Split**
+
+- We split the dataset in a **70:15:15 ratio** to create the Train, Validation and Test datasets.
+- We set the random state to 42 and apply stratification to ensure the proportion of approved and rejected records stay the same in all 3 datasets.
+
+**5) Encoding**
 
 - We now convert all the categorical columns to numeric using the **One Hot Encoder**.
 - The reason why we don't use **Ordinal Encoding** is to avoid introducing a notion of "order" into features where order is NOT inherently present between the categories.
 
-**5) Train Test Split**
-
-- We split the dataset in a **70:15:15 ratio** to create the Train, Validation and Test datasets.
-- We set the random state to 42 and apply stratification to ensure the proportion of approved and rejected records stay the same in all 3 datasets.
 
 **6) Scaling**
 
